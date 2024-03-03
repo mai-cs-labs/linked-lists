@@ -73,8 +73,14 @@ TEST(create_list)
 
 TEST(destroy_list)
 {
-    List* list = list_create();
+    List* list = NULL;
+
     list_destroy(&list);
+
+    list = list_create();
+
+    list_destroy(&list);
+
     TEST_ASSERT(list == NULL);
 }
 
@@ -237,7 +243,44 @@ TEST(remove_at_list_back)
 
 TEST(remove_after_list_element)
 {
+    ListIterator last, target;
+
     List* list = NULL;
+
+    list_remove_after(list, (ListIterator){});
+
+    list = list_create();
+
+    {
+        List* other = list_create();
+
+        list_insert_front(other);
+        list_insert_front(other);
+
+        list_remove_after(list, list_begin(other));
+
+        list_destroy(&other);
+    }
+
+    list_insert_front(list);
+    list_remove_after(list, list_begin(list));
+
+    last = list_insert_front(list);
+    list_remove_after(list, list_begin(list));
+
+    TEST_ASSERT(list_size(list) == 1);
+
+    list_remove_after(list, list_last(list));
+
+    list_insert_front(list);
+    list_insert_front(list);
+
+    list_remove_after(list, list_begin(list));
+
+    target = list_begin(list);
+    list_iterator_increment(&target);
+
+    TEST_ASSERT(list_iterator_equal(target, last));
 
     list_destroy(&list);
 }
